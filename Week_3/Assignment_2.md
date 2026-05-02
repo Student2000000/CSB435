@@ -12,11 +12,18 @@ def search_patients():
     return render_template('results.html', patients=results)
 ```
 1. What type of injection vulnerability exists here?
-Failure to clean and validate user input. "Little Bobby Tables, they call him."
+
+Failure to clean and validate user input. "Little Bobby Tables, we call him."
+
 2. Write an example attack payload that would exploit this
+
+From the textbook: 
+"SELECT * FROM members WHERE
+((u='admin' AND p=' ') OR 'x'='x') "
+
 3. What damage could an attacker do with this vulnerability?
-4. Provide the corrected code that fixes this vulnerability
-5. Explain why your fix prevents the attack
+
+Using this attack payload allows the attacker to log in as an admin w/o ever having to know the admins password. From there the ataker could steal information, change passwords, ransom the inforation, or sell the information. 
 
 ### Code Snippet 2: Medical Report Generator
 ```
@@ -33,10 +40,21 @@ def generate_report(patient_id):
 
 ```
 1. What type of injection vulnerability exists here?
+
+Command injection
+
 2. Write an example attack payload
+
+From slides:
+magick foo.png ; rm -rf / foo.gif
+
 3. What could an attacker do with this vulnerability?
-4. Provide corrected code that eliminates the vulnerability
-5. Explain why shell commands with user input are dangerous
+
+Attackers could sift through file systems usng ls or dir, or if the program has high system privledges, then they could gain root/admin access. 
+
+4. Explain why shell commands with user input are dangerous
+
+Users can be kowlingly and unknowlingy malicious! It is not safe to trust random people not to do hrrible things. 
 
 ### Code Snippet 3: Patient Notes Display
 ```
@@ -54,6 +72,16 @@ For each vulnerability:
   * What type of injection is it? 
   * Provide an attack payload example
   * Explain the impact
+
+1. There is no trailing slash on the end of the file directory
+    * Path traversal
+    * ../
+    * Users can traverse through files backwards eventualy reaching the root, there they can gain access to private or sensitive files. 
+
+2. Html is rendered directly 
+    * SQL injection
+    * ;ls -la or ;cat /etc/passwd
+    * If there were any malicious code in the note it would be rendered when opened. 
 
 ### Code Snippet 4: Prescription Lookup
 ```
@@ -76,6 +104,9 @@ def get_prescriptions():
 1. This code has SQL injection in TWO different parameters. Identify both.
 2. For the patient_id parameter:
   * Why is it vulnerable even without quotes?
+
+    * Test
+
   * Provide an attack payload
 3. For the medication parameter:
   * Write a UNION injection that would dump all patient data
